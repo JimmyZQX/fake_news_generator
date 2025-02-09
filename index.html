@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fake News Generator</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        #news-container { margin-top: 20px; }
+        .news-title { cursor: pointer; color: blue; text-decoration: underline; margin: 10px; }
+    </style>
+</head>
+<body>
+<h1>Fake News Generator</h1>
+<input type="text" id="search" placeholder="Enter keywords...">
+<button onclick="generateNews()">Search</button>
+<div id="news-container">
+    <div class='news-title' onclick="window.location.href='aliens-mars.html'">Aliens Discovered on Mars</div>
+    <div class='news-title' onclick="window.location.href='time-travel.html'">Scientists Confirm Time Travel is Real</div>
+    <div class='news-title' onclick="window.location.href='ai-consciousness.html'">Artificial Intelligence Achieves Human-Level Consciousness</div>
+    <div class='news-title' onclick="openArticle('Government to Introduce Mind-Reading Technology', 'mind reading')">Government to Introduce Mind-Reading Technology</div>
+    <div class='news-title' onclick="openArticle('New Planet Found That Supports Life', 'new planet')">New Planet Found That Supports Life</div>
+    <div class='news-title' onclick="openArticle('Ancient Civilization Discovered Under Antarctica', 'ancient civilization')">Ancient Civilization Discovered Under Antarctica</div>
+    <div class='news-title' onclick="openArticle('Scientists Develop Cure for Aging', 'aging cure')">Scientists Develop Cure for Aging</div>
+    <div class='news-title' onclick="openArticle('Secret Underground City Found Beneath New York', 'underground city')">Secret Underground City Found Beneath New York</div>
+    <div class='news-title' onclick="openArticle('NASA Confirms Evidence of Parallel Universes', 'parallel universes')">NASA Confirms Evidence of Parallel Universes</div>
+    <div class='news-title' onclick="openArticle('Mystery Signal Detected from Deep Space', 'deep space signal')">Mystery Signal Detected from Deep Space</div>
+    <div class='news-title' onclick="openArticle('Breakthrough in Quantum Computing Changes Everything', 'quantum computing')">Breakthrough in Quantum Computing Changes Everything</div>
+    <div class='news-title' onclick="openArticle('Massive Underwater Pyramid Discovered in the Pacific Ocean', 'underwater pyramid')">Massive Underwater Pyramid Discovered in the Pacific Ocean</div>
+    <div class='news-title' onclick="openArticle('Elon Musk Announces Plan to Colonize Venus', 'Venus colonization')">Elon Musk Announces Plan to Colonize Venus</div>
+</div>
+
+<script>
+    async function generateNews() {
+        const query = document.getElementById('search').value;
+        if (!query) return alert("Please enter a keyword");
+
+        const container = document.getElementById('news-container');
+        container.innerHTML = "";  // Clear existing articles **before** fetching new ones
+
+        try {
+            const response = await axios.post('https://api.openai.com/v1/completions', {
+                model: "text-davinci-003",
+                prompt: `Generate five fake news headlines based on: ${query}`,
+                max_tokens: 50,
+                n: 2
+            }, {
+                headers: { 'Authorization': 'Bearer YOUR_OPENAI_API_KEY' }
+            });
+
+            const headlines = response.data.choices.map(choice => choice.text.trim());
+
+            headlines.forEach((title) => {
+                const div = document.createElement('div');
+                div.className = 'news-title';
+                div.textContent = title;
+                div.onclick = () => openArticle(title, query);
+                container.appendChild(div);
+            });
+
+        } catch (error) {
+            console.error("Error generating news:", error);
+            alert("Failed to retrieve news. Please try again.");
+        }
+    }
+
+
+    function openArticle(title, query) {
+        localStorage.setItem('newsTitle', title);
+        localStorage.setItem('newsQuery', query);
+        window.location.href = 'article.html';
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loading...</title>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    h1 { color: darkblue; }
+    .content { max-width: 800px; margin: auto; }
+    a { display: block; margin-top: 20px; color: blue; text-decoration: underline; }
+  </style>
+</head>
+<body>
+<div class="content">
+  <h1 id="article-title">Loading...</h1>
+  <p id="article-content">Please wait...</p>
+  <a href="index.html">← Back to Homepage</a>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", async function () {
+    const title = localStorage.getItem('newsTitle') || "Unknown Article";
+    const query = localStorage.getItem('newsQuery') || "mystery";
+
+    document.getElementById("article-title").textContent = title;
+    document.title = title;  // Update page title
+
+    try {
+      const response = await axios.post('https://api.openai.com/v1/completions', {
+        model: "text-davinci-003",
+        prompt: `Write a detailed fake news article about: ${title}. Include a headline, an engaging introduction, and at least two paragraphs of content.`,
+        max_tokens: 300
+      }, {
+        headers: { 'Authorization': 'Bearer YOUR_OPENAI_API_KEY' }
+      });
+
+      document.getElementById("article-content").textContent = response.data.choices[0].text.trim();
+    } catch (error) {
+      console.error("Error loading article:", error);
+      document.getElementById("article-content").textContent = "Failed to load article. Please try again.";
+    }
+  });
+</script>
+</body>
+</html>
